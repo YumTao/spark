@@ -106,8 +106,16 @@ object RDDDemo {
     val keyByRdd = sc.parallelize(List("dog", "salmon", "salmon", "rat", "elephant"), 3)
     keyByRdd.keyBy(_.length).collect
 
-
-
+    /**
+      * join:内连 以key进行join，相同key的在同一集合内
+      * leftOuterJoin 左外联
+      * rightOuterJoin 右外联
+      */
+    val leftRdd = sc.parallelize(Array("a" -> 1, "c" -> 1))
+    val rightRdd = sc.parallelize(Array("a" -> 2, "b" -> 2))
+    leftRdd.join(rightRdd) // Array((a,(1,2)))
+    leftRdd.leftOuterJoin(rightRdd) // Array((a,(1,Some(2))), (c,(1,None)))
+    leftRdd.rightOuterJoin(rightRdd) // Array((b,(None,2)), (a,(Some(1),2)))
   }
 
 }
