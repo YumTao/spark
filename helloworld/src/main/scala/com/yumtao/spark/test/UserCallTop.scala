@@ -2,6 +2,7 @@ package com.yumtao.spark.test
 
 import java.text.SimpleDateFormat
 
+import com.yumtao.spark.util.DateUtils
 import org.apache.spark.{SparkConf, SparkContext}
 
 /**
@@ -74,7 +75,7 @@ object UserCallTop {
         val phone = lineArray(0)
         val cellId = lineArray(2)
         val callType = lineArray(3)
-        val absTime = getTime(lineArray(1))
+        val absTime = DateUtils.getTime(lineArray(1), "yyyyMMddHHmmss")
         (s"$phone&$cellId", absTime, callType)
       }
     )
@@ -121,6 +122,6 @@ object UserCallTop {
     topCallTimeByPhone
   }
 
-  def getTime(dateStr: String): Long = sdf.parse(dateStr).getTime
+
 
 }
