@@ -2,7 +2,7 @@ package com.yumtao.spark.test
 
 import java.net.URI
 
-import com.yumtao.spark.util.FileUtils
+import com.yumtao.utils.FileUtils
 import org.apache.spark.{SparkConf, SparkContext}
 
 /**

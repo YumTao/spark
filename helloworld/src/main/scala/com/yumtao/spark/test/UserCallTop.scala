@@ -2,7 +2,7 @@ package com.yumtao.spark.test
 
 import java.text.SimpleDateFormat
 
-import com.yumtao.spark.util.{DateUtils, FileUtils}
+import com.yumtao.utils.{DateUtils, FileUtils}
 import org.apache.spark.{SparkConf, SparkContext}
 
 /**
