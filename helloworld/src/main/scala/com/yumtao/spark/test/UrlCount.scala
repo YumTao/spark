@@ -2,18 +2,22 @@ package com.yumtao.spark.test
 
 import java.net.URI
 
+import com.yumtao.spark.util.FileUtils
 import org.apache.spark.{SparkConf, SparkContext}
 
 /**
-  * Created by yumtao on 2019/1/16.
+  * @goal 根据url访问日志，统计每个host下的访问次数多的url
+  * @src 资源文件path: resource/UrlCount.log
+  * @author Created by yumtao on 2019/1/16.
   */
 object UrlCount {
   def main(args: Array[String]): Unit = {
     val conf = new SparkConf().setAppName("UrlCount").setMaster("local")
     val sc = new SparkContext(conf)
 
-    //    func1(sc)
-    func2(sc)
+    val path = FileUtils.getPathInProject("UrlCount.log")
+    //    func1(sc, path)
+    func2(sc, path)
 
     sc.stop()
   }
@@ -21,9 +25,9 @@ object UrlCount {
   /**
     * 存在内存溢出问题
     */
-  private def func1(sc: SparkContext) = {
+  private def func1(sc: SparkContext, filePath: String) = {
     // ArrayBuffer((url, time),(url, time))
-    val url2Time = sc.textFile("D:/tmp/spark/urlcount/itcast.log")
+    val url2Time = sc.textFile(filePath)
       // 切分
       .map(_.split("\t"))
       // key为url, value为time
@@ -69,9 +73,9 @@ object UrlCount {
     println("result: " + result.collect.toBuffer)
   }
 
-  def func2(sc: SparkContext): Unit = {
+  def func2(sc: SparkContext, filePath: String): Unit = {
     // ArrayBuffer((url, time),(url, time))
-    val url2Time = sc.textFile("D:/tmp/spark/urlcount/itcast.log")
+    val url2Time = sc.textFile(filePath)
       // 切分
       .map(_.split("\t"))
       // key为url, value为time
@@ -93,7 +97,7 @@ object UrlCount {
         urlObj.getHost.equals(host)
       })
 
-      val topCount = cUrl2Count.sortBy(_._2, false).take(0)
+      val topCount = cUrl2Count.sortBy(_._2, false).first
       println(s"current host:$host, 访问次数最多的为" + topCount)
     }
   }

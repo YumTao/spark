@@ -2,10 +2,12 @@ package com.yumtao.spark.test
 
 import java.text.SimpleDateFormat
 
-import com.yumtao.spark.util.DateUtils
+import com.yumtao.spark.util.{DateUtils, FileUtils}
 import org.apache.spark.{SparkConf, SparkContext}
 
 /**
+  * @goal 根据用户通信记录，获取用户常用地址信息(通信时长最长的位置信息)
+  * @src
   * Created by yumtao on 2019/1/16.
   */
 object UserCallTop {
@@ -15,9 +17,10 @@ object UserCallTop {
     val conf = new SparkConf().setAppName("UserCallTop").setMaster("local")
     val sc = new SparkContext(conf)
 
+    val callMsgPath = FileUtils.getPathInProject("UserCallTop/bs_log")
     // ArrayBuffer((18688888888,16030401EAFB68F1E3CDF819735E1C66,30960000),
     // (18611132889,16030401EAFB68F1E3CDF819735E1C66,34500000))
-    val topCall = getTopCallByPhone(sc)
+    val topCall = getTopCallByPhone(sc, callMsgPath)
 
     // 将cellId做为key (cellId, (phone, callTime))
     // ArrayBuffer((16030401EAFB68F1E3CDF819735E1C66,(18688888888,30960000)),
@@ -31,7 +34,7 @@ object UserCallTop {
     // ArrayBuffer((9F36407EAD0629FC166F14DDE7970F68,(116.304864,40.050645,6)),
     // (CC0710CC94ECC657A8561DE549D940E0,(116.303955,40.041935,6)),
     // (16030401EAFB68F1E3CDF819735E1C66,(116.296302,40.032296,6)))
-    val location = sc.textFile("D:/tmp/spark/lac_info.txt").map(_.split(",")).map(array => {
+    val location = sc.textFile(FileUtils.getPathInProject("UserCallTop/lac_info.txt")).map(_.split(",")).map(array => {
       val cellId = array(0)
       val latitude = array(1)
       val longtitude = array(2)
@@ -59,18 +62,18 @@ object UserCallTop {
     println("result msg: " + topCallTimeLocation.collect.toBuffer)
 
     // 结果保存
-    topCallTimeLocation.saveAsTextFile("D:/tmp/spark/location_out")
+    topCallTimeLocation.saveAsTextFile(FileUtils.getPathInProject("UserCallTop/location_out"))
     sc.stop()
   }
 
-  private def getTopCallByPhone(sc: SparkContext) = {
+  private def getTopCallByPhone(sc: SparkContext, filePath: String) = {
     /**
       * 1. 统计每个手机号在每个基站ID的通话时长
       */
     // 1.1 每个手机号在每个基站ID，通话时间点
     // (手机号+基站id, 时间毫秒值, 通话类型)
     // ArrayBuffer((18688888888&16030401EAFB68F1E3CDF819735E1C66,1459038240000,1))
-    val callNodeByPhoneAndCellId = sc.textFile("D:/tmp/spark/bs_log").map(line => line.split(",")).map(
+    val callNodeByPhoneAndCellId = sc.textFile(filePath).map(line => line.split(",")).map(
       lineArray => {
         val phone = lineArray(0)
         val cellId = lineArray(2)
