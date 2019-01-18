@@ -1,0 +1,6 @@
+1	wowo	25
+2	guangguang	26
+3	guoguo	26
+4	niu	26
+5	qingqing	20
+6	me	25
