@@ -8,7 +8,7 @@ import org.apache.spark.{Partitioner, SparkConf, SparkContext}
   * @src resource 下yumtao/console.log
   * @author Created by yumtao on 2019/1/17.
   */
-object IpUrlStatistic {
+object IpUrlByPartition {
   def main(args: Array[String]): Unit = {
     System.setProperty("hadoop.home.dir", "D:/software/hadoop-2.6.0-cdh5.7.0")
 
