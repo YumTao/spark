@@ -12,6 +12,7 @@
         <module>helloworld</module>
         <module>userdefine</module>
         <module>common</module>
+        <module>practice</module>
     </modules>
 
 
