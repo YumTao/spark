@@ -22,12 +22,13 @@ object HelloWorld {
     personDF.show
 
     // 1. 使用SparkSql API操作数据
-    //    sparkSqlL(personDF)
+    sparkSqlL(personDF)
 
     // 2. 使用SQL进行操作数据
-    sql(personDF, sqlContext)
+//    sql(personDF, sqlContext)
 
-
+    // 以json方式输出到文件中
+    personDF.write.json(FileUtils.getPathInProject("sql/out/person_json"))
     sc.stop()
   }
 
@@ -37,8 +38,24 @@ object HelloWorld {
     * @param df
     */
   private def sparkSqlL(df: DataFrame) = {
+    // select id from table
     df.select("id").show
+    // select * from table where id < 3 AND age = 25
     df.filter("id < 3 AND age = 25").show
+
+    // 内联查询
+    // select t1.*, t2.* from table t1 inner join table t2 on t1.id = t2.id
+    df.join(df, df("id") === df("id"), "inner").show
+
+    // 聚合函数
+    // select age, count(age) from table group by age
+    df.groupBy(df("age")).count.show
+
+    // 分页
+    df.limit(2).show
+
+    // 打印scheme
+    df.printSchema
   }
 
   /**
@@ -59,5 +76,3 @@ object HelloWorld {
     joinDF.show
   }
 }
-
-case class Person(id: Int, name: String, age: Int) extends Serializable
