@@ -22,6 +22,7 @@
         <encoding>UTF-8</encoding>
         <scala.version>2.10.6</scala.version>
         <scala.compat.version>2.10</scala.compat.version>
+        <spark.version>1.5.2</spark.version>
     </properties>
 
     <dependencies>
@@ -34,19 +35,19 @@
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_2.10</artifactId>
-            <version>1.5.2</version>
+            <version>${spark.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-streaming_2.10</artifactId>
-            <version>1.5.2</version>
+            <version>${spark.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql_2.10</artifactId>
-            <version>1.5.2</version>
+            <version>${spark.version}</version>
         </dependency>
 
 
@@ -68,6 +69,14 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.25</version>
         </dependency>
+
+        <!-- SparkStreaming-kafka依赖 -->
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming-kafka_2.10</artifactId>
+            <version>${spark.version}</version>
+        </dependency>
+
     </dependencies>
 
 </project>
