@@ -1,5 +1,6 @@
 package com.yumtao.spark.stream
 
+import com.yumtao.utils.LoggerLevels
 import org.apache.spark.streaming.{Duration, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
 
@@ -8,6 +9,7 @@ import org.apache.spark.{SparkConf, SparkContext}
   */
 object NetWordCount {
   def main(args: Array[String]): Unit = {
+    LoggerLevels.setStreamingLogLevels()
     /* 1. 创建StreamingContext， 注册输入源，获取数据 */
     // 注意：Spark Streaming 程序,本地模式excutor数必须 >= 2, 因为需要receiver和数据处理两个线程
     // cpu core >= 2, 才能做到数据接收与数据处理并行
