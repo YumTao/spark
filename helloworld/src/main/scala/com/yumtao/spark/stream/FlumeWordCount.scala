@@ -22,16 +22,18 @@ object FlumeWordCount {
     // 有状态转换时必须设置checkpoint
     ssc.checkpoint("c://ck2")
 
-    // Creates an input stream
-    val inputStream: ReceiverInputDStream[SparkFlumeEvent] = FlumeUtils.createPollingStream(ssc, "yumtao", 8888)
-    // 多数据源使用
-    //    val sources = Seq(new InetSocketAddress("yumtao", 8888), new InetSocketAddress("yumtao", 8889))
-    //    val inputStream: ReceiverInputDStream[SparkFlumeEvent] = FlumeUtils.createPollingStream(ssc, sources, StorageLevel.MEMORY_AND_DISK_SER_2)
+    /** Creates an input stream */
+    // 方式一：spark poll 方式获取flume 数据
+    // val inputStream = getFlumeInputStreamByPoll(ssc)
+
+    // 方式二: flume push数据到spark
+    val inputStream = getFlumeInputStreamByPush(ssc)
 
     // 获取的数据流
     val contentStream = inputStream.map(tmp => new String(tmp.event.getBody.array()))
     val result = contentStream.flatMap(_.split(" ")).map((_, 1)).updateStateByKey(updateFunc)
     result.print()
+    result.saveAsTextFiles("/usr/local/tao/test_dir/spark/result/flume-wordcount", "txt")
 
     ssc.start()
     ssc.awaitTermination()
@@ -41,6 +43,32 @@ object FlumeWordCount {
     val currentCounts: Int = currentVal.sum
     val preCounts = preVal.getOrElse(0)
     Option(currentCounts + preCounts)
+  }
+
+  /**
+    * spark 主动poll方式获取flume数据
+    *
+    * @param ssc
+    * @return
+    */
+  def getFlumeInputStreamByPoll(ssc: StreamingContext): ReceiverInputDStream[SparkFlumeEvent] = {
+    val inputStream: ReceiverInputDStream[SparkFlumeEvent] = FlumeUtils.createPollingStream(ssc, "yumtao", 8888)
+    // 多数据源使用
+    //    val sources = Seq(new InetSocketAddress("yumtao", 8888), new InetSocketAddress("yumtao", 8889))
+    //    val inputStream: ReceiverInputDStream[SparkFlumeEvent] = FlumeUtils.createPollingStream(ssc, sources, StorageLevel.MEMORY_AND_DISK_SER_2)
+
+    inputStream
+  }
+
+  /**
+    * flume 主动push，将数据给spark
+    *
+    * @param ssc
+    * @return
+    */
+  def getFlumeInputStreamByPush(ssc: StreamingContext): ReceiverInputDStream[SparkFlumeEvent] = {
+    val inputStream: ReceiverInputDStream[SparkFlumeEvent] = FlumeUtils.createStream(ssc, "singlenode", 55555)
+    inputStream
   }
 
 }
