@@ -1,9 +1,6 @@
 package com.yumtao.spark.stream
 
-import java.net.InetSocketAddress
-
 import com.yumtao.utils.LoggerLevels
-import org.apache.spark.storage.StorageLevel
 import org.apache.spark.streaming.dstream.ReceiverInputDStream
 import org.apache.spark.streaming.flume.{FlumeUtils, SparkFlumeEvent}
 import org.apache.spark.streaming.{Duration, StreamingContext}
@@ -11,6 +8,15 @@ import org.apache.spark.{SparkConf, SparkContext}
 
 /**
   * Created by yumtao on 2019/2/1.
+  *
+  * SparkStreaming整合flume两种方式
+  * - poll模式：
+  * 	1. flume端开放端口
+  * 	2. SparkStreaming根据flume端开发的端口获取数据。
+  *
+  * - push模式：
+  * 	1. SparkStreaming端开放端口
+  * 	2. flume将数据发送到SparkStreaming端开放的端口中。
   */
 object FlumeWordCount {
   def main(args: Array[String]): Unit = {
@@ -67,7 +73,7 @@ object FlumeWordCount {
     * @return
     */
   def getFlumeInputStreamByPush(ssc: StreamingContext): ReceiverInputDStream[SparkFlumeEvent] = {
-    val inputStream: ReceiverInputDStream[SparkFlumeEvent] = FlumeUtils.createStream(ssc, "singlenode", 55555)
+    val inputStream: ReceiverInputDStream[SparkFlumeEvent] = FlumeUtils.createStream(ssc, "0.0.0.0", 55555)
     inputStream
   }
 
